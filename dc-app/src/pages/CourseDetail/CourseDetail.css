@@ -1,0 +1,167 @@
+/* 全体コンテナ */
+.detail-container {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  padding: 16px;
+  gap: 16px;
+  position: relative;
+
+  background: #f8f9fb;   /* ← 背景を薄グレーにして白文字を打ち消す */
+  color: #000;           /* ← 文字色を黒に固定 */
+}
+
+/* detail-left 内のヘッダー（授業名 + メニュー） */
+.info-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+}
+
+.menu-btn {
+  background: none;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
+  color: #000; /* ← 見えるように黒 */
+}
+
+.menu-popup {
+  position: absolute;
+  right: 0;
+  top: 65px; /* ← タイトルの下に自然に出る位置 */
+  background: white;
+  border: 1px solid #ddd;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+  border-radius: 6px;
+  z-index: 20;
+}
+
+.menu-popup div {
+  padding: 8px 14px;
+  cursor: pointer;
+  font-size: 14px;
+}
+.menu-popup div:hover {
+  background: #f0f0f0;
+}
+.delete-btn {
+  color: red;
+}
+
+/* 左側（授業情報・暫定成績） */
+.detail-left {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  background: #ffffff; /* ← 白背景 */
+  padding: 16px;
+  border-radius: 8px;
+  color: #000;
+}
+
+.title {
+  margin: 0;
+}
+
+.info-box p {
+  margin: 4px 0;
+}
+
+/* 暫定成績（目立たせる） */
+.score-summary {
+  background: #eef6ff; /* ← 淡いブルー */
+  padding: 16px;
+  border-radius: 8px;
+  text-align: center;
+  color: #000; /* ← 白文字ではなく黒文字で見えやすく */
+}
+
+.score-title {
+  font-size: 14px;
+  color: #000;
+}
+
+.score-value {
+  font-size: 32px;
+  font-weight: bold;
+}
+
+/* 右側（成績項目一覧） */
+.detail-right {
+  flex: 2;
+  background: #ffffff; /* ← 白背景 */
+  padding: 16px;
+  border-radius: 8px;
+  color: #000; /* ← 黒文字 */
+}
+
+/* 成績表 */
+.score-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.score-table th,
+.score-table td {
+  padding: 8px;
+  border-bottom: 1px solid #ddd;
+  text-align: center;
+  color: #000;
+}
+
+.score-input {
+  width: 60px;
+  padding: 4px;
+  box-sizing: border-box;
+}
+
+/* 保存ボタン */
+.save-btn {
+  margin-top: 12px;
+  width: 100%;
+  padding: 10px;
+  background: #2e6ce2;
+  border: none;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* ──────────────── */
+/* 成績ゲージバー   */
+/* ──────────────── */
+.score-bar-container {
+  width: 100%;
+  height: 14px;
+  background: #dfe8f5;
+  border-radius: 6px;
+  overflow: hidden;
+  margin-top: 6px;
+}
+
+.score-bar-fill {
+  height: 100%;
+  background: #2e6ce2;
+  transition: width 0.4s ease;
+}
+
+
+.home-btn {
+  margin-top: 12px;
+  width: 100%;
+  padding: 10px;
+  border: none;
+  background: #4a90e2;
+  color: white;
+  font-size: 15px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.home-btn:hover {
+  background: #3a78c4;
+}

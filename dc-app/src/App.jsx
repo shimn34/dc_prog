@@ -6,6 +6,7 @@ import Login from "./pages/Login/Login";
 import Home from "./pages/Home/Home";
 import AddCourse from "./pages/AddCourse/AddCourse";
 import CourseDetail from "./pages/CourseDetail/CourseDetail";
+import EditCourse from "./pages/EditCourse/EditCourse";
 
 import ProtectedRoute from "./routes/ProtectedRoute";
 
@@ -21,7 +22,7 @@ function App() {
           {/* ログインページ */}
           <Route path="/login" element={<Login />} />
 
-          {/* ログイン必須ページ（レイアウトなし） */}
+          {/* ホーム（レイアウトなし） */}
           <Route
             path="/home"
             element={
@@ -41,12 +42,22 @@ function App() {
             }
           />
 
-          {/* 授業詳細画面（courseId を必須とする） */}
+          {/* 授業詳細（courseId を URL パラメータで受け取る） */}
           <Route
-            path="/detail"
+            path="/detail/:courseId"
             element={
               <ProtectedRoute>
                 <CourseDetail />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* 授業編集画面（AddCourse の UI + 初期値入り） */}
+          <Route
+            path="/edit-course/:courseId"
+            element={
+              <ProtectedRoute>
+                <EditCourse />
               </ProtectedRoute>
             }
           />

@@ -6,7 +6,7 @@
   justify-content: center;
   align-items: center;
 
-  padding: 2vw; /* ← 上下も左右も1〜2vwの余白 */
+  padding: 2vw;
   box-sizing: border-box;
 }
 
@@ -15,12 +15,26 @@
   display: grid;
   grid-template-columns: 70px repeat(6, 1fr);
 
-  width: min(90vw, 90vh);   /* ← 正方形 */
-  height: min(90vw, 90vh);  /* ← 正方形 */
+  width: min(90vw, 90vh);
+  height: min(90vw, 90vh);
   aspect-ratio: 1 / 1;
 
   background: #fff;
   border: 1px solid #ddd;
+  overflow: hidden;
+
+  /* 各行の高さを均等にする（ただし内容が押し広げないよう min-height:0 が必要）*/
+  grid-auto-rows: 1fr;
+}
+
+/* -----------------------------
+   セルが絶対に伸びないようにするための必須指定
+   ----------------------------- */
+.cell,
+.course-cell,
+.course-card {
+  min-width: 0;
+  min-height: 0;
   overflow: hidden;
 }
 
@@ -31,7 +45,7 @@
   align-items: center;
   justify-content: center;
   padding: 2px;
-  color: #000; /* ← 黒文字 */
+  color: #000;
 }
 
 /* 見出し */
@@ -61,9 +75,51 @@
   font-size: 1vh;
 }
 
-/* 科目名（折り返しなし） */
-.course-text {
-  max-width: 90%;
+/* 空セルの表示 */
+.course-empty {
+  color: #888;
+  font-size: 1.6em;
+}
+
+/* -----------------------------
+   ここが最重要：中身でセルが伸びないように省略表示
+   ----------------------------- */
+
+.course-cell {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.course-card {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.course-name {
+  font-weight: 600;
+  font-size: 1.1em;
+  color: #0b3b79;
+
+  white-space: normal;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;      /* 2行まで表示 */
+  -webkit-box-orient: vertical;
+}
+
+.course-meta {
+  font-size: 0.85em;
+  color: #333;
+
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -72,28 +128,4 @@
 /* Grid行 */
 .row {
   display: contents;
-}
-
-.course-cell.occupied .course-card {
-  width: 100%;
-  padding: 6px;
-  text-align: left;
-}
-
-.course-name {
-  font-weight: 600;
-  font-size: 1.1em;
-  color: #0b3b79;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.course-meta {
-  font-size: 0.85em;
-  color: #333;
-}
-.course-empty {
-  color: #888;
-  font-size: 1.6em;
 }

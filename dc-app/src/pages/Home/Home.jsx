@@ -51,7 +51,7 @@ export default function Home() {
     const exist = findCourse(dayVal, periodVal);
     if (exist) {
       // go to detail
-      navigate(`/course/${exist.courseId}`);
+      navigate(`/detail/${exist.courseId}`);
     } else {
       // go to add with query
       navigate(`/add?day=${dayVal}&period=${periodVal}`);

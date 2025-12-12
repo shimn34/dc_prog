@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 import { getCourse, updateCourse, deleteCourse } from "../../services/courseService";
+import "./CourseDetail.css";
 
 function calcProgress(tasks = []) {
   if (!tasks || tasks.length === 0) return 0;
@@ -26,17 +27,17 @@ export default function CourseDetail() {
 
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [editingScores, setEditingScores] = useState({}); // {taskId: score}
+  const [editingScores, setEditingScores] = useState({});
   const [showMenu, setShowMenu] = useState(false);
 
   useEffect(() => {
     if (!user?.uid) return;
+
     let mounted = true;
     getCourse(user.uid, courseId)
       .then((c) => {
         if (mounted) {
           setCourse(c);
-          // initialize editingScores with current scores
           const map = {};
           (c?.tasks || []).forEach((t) => {
             map[t.id] = t.score ?? "";
@@ -44,8 +45,9 @@ export default function CourseDetail() {
           setEditingScores(map);
         }
       })
-      .catch((e) => console.error(e))
+      .catch(console.error)
       .finally(() => mounted && setLoading(false));
+
     return () => (mounted = false);
   }, [user?.uid, courseId]);
 
@@ -57,14 +59,16 @@ export default function CourseDetail() {
 
   const saveScores = async () => {
     if (!user?.uid || !course) return;
+
     const updatedTasks = (course.tasks || []).map((t) => ({
       ...t,
       score: editingScores[t.id] === "" ? null : Number(editingScores[t.id]),
     }));
+
     try {
       await updateCourse(user.uid, courseId, { tasks: updatedTasks });
-      // refresh
       setCourse((c) => ({ ...c, tasks: updatedTasks }));
+      alert("保存しました");
     } catch (e) {
       console.error(e);
       alert("保存に失敗しました");
@@ -72,7 +76,7 @@ export default function CourseDetail() {
   };
 
   const handleDelete = async () => {
-    const ok = window.confirm("本当にこの授業を削除しますか？ この操作は取り消せません。");
+    const ok = window.confirm("本当に授業を削除しますか？");
     if (!ok) return;
     try {
       await deleteCourse(user.uid, courseId);
@@ -87,64 +91,76 @@ export default function CourseDetail() {
   if (!course) return <div style={{ padding: 16 }}>授業が見つかりません。</div>;
 
   return (
-    <div style={{ maxWidth: 760, margin: "12px auto", padding: 12 }}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-        <div>
-          <h2 style={{ margin: 0 }}>{course.courseName}</h2>
-          <div style={{ color: "#555" }}>{course.teacher} ・ {course.room}</div>
-        </div>
+    <div className="detail-container">
 
-        <div style={{ position: "relative" }}>
-          <button onClick={() => setShowMenu((s) => !s)}>︙</button>
+      {/* 左 1/3 */}
+      <div className="detail-left">
+
+        <div className="info-header">
+          <h2 className="title">{course.courseName}</h2>
+          <button className="menu-btn" onClick={() => setShowMenu((s) => !s)}>⋯</button>
+
           {showMenu && (
-            <div style={{
-              position: "absolute",
-              right: 0,
-              top: "100%",
-              background: "#fff",
-              border: "1px solid #ddd",
-              boxShadow: "0 6px 16px rgba(0,0,0,0.12)",
-              zIndex: 20,
-            }}>
-              <button style={{ display: "block", padding: 8, width: 140, textAlign: "left" }} onClick={() => { setShowMenu(false); navigate(`/edit-course/${course.courseId}`); }}>編集</button>
-              <button style={{ display: "block", padding: 8, width: 140, textAlign: "left", color: "red" }} onClick={() => { setShowMenu(false); handleDelete(); }}>削除</button>
+            <div className="menu-popup">
+              <div onClick={() => navigate(`/edit-course/${course.courseId}`)}>授業を編集</div>
+              <div className="delete-btn" onClick={handleDelete}>授業を削除</div>
             </div>
           )}
         </div>
+
+        <div className="info-box">
+          <p><b>教員：</b>{course.teacher || "-"}</p>
+          <p><b>教室：</b>{course.room || "-"}</p>
+        </div>
+
+        <div className="score-summary">
+          <div className="score-title">暫定成績</div>
+
+          {/* ゲージ */}
+          <div className="score-bar-container">
+            <div className="score-bar-fill" style={{ width: `${progress}%` }}></div>
+          </div>
+
+          {/* % 表示 */}
+          <div className="score-value">{progress}%</div>
+        </div>
+        <button className="home-btn" onClick={() => navigate("/home")}>
+    ホームに戻る
+  </button>
       </div>
 
-      <div style={{ marginTop: 12 }}>
-        <h3>成績（暫定）: {progress}%</h3>
-      </div>
+      {/* 右 2/3 → ★ detail-left の外に正しく配置 */}
+      <div className="detail-right">
+        <table className="score-table">
+          <thead>
+            <tr>
+              <th>成績項目</th>
+              <th>自身の点数</th>
+              <th>最大点</th>
+              <th>重み(%)</th>
+            </tr>
+          </thead>
 
-      <div style={{ marginTop: 8 }}>
-        <h4>評価基準</h4>
-        <div style={{ display: "grid", gap: 12 }}>
-          {(course.tasks || []).map((t) => (
-            <div key={t.id} style={{ border: "1px solid #eee", padding: 8 }}>
-              <div style={{ display: "flex", justifyContent: "space-between", gap: 12 }}>
-                <div>
-                  <div style={{ fontWeight: 600 }}>{t.name}</div>
-                  <div style={{ color: "#666", fontSize: 13 }}>満点: {t.maxScore}　重み: {t.weight}</div>
-                </div>
-
-                <div style={{ minWidth: 140 }}>
-                  <label style={{ fontSize: 12, color: "#666" }}>得点</label>
+          <tbody>
+            {course.tasks.map((t) => (
+              <tr key={t.id}>
+                <td>{t.name}</td>
+                <td>
                   <input
                     type="number"
                     value={editingScores[t.id] ?? ""}
                     onChange={(e) => handleScoreChange(t.id, e.target.value)}
-                    style={{ width: "100%", boxSizing: "border-box", marginTop: 6 }}
+                    className="score-input"
                   />
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
+                </td>
+                <td>{t.maxScore}</td>
+                <td>{t.weight}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
 
-        <div style={{ marginTop: 12, display: "flex", gap: 8, justifyContent: "flex-end" }}>
-          <button onClick={saveScores}>点数を保存</button>
-        </div>
+        <button className="save-btn" onClick={saveScores}>点数を保存</button>
       </div>
     </div>
   );
