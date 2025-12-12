@@ -10,8 +10,8 @@ import EditCourse from "./pages/EditCourse/EditCourse";
 import AddTerm from "./pages/AddTerm/AddTerm";
 
 import ProtectedRoute from "./routes/ProtectedRoute";
-import TermGate from "./routes/TermGate";      // ←★ 学期有無チェック
-import NoTerm from "./pages/NoTerm/NoTerm";   // ←★ 学期ゼロのときの画面
+import TermGate from "./routes/TermGate";
+import NoTerm from "./pages/NoTerm/NoTerm";
 
 function App() {
   return (
@@ -35,7 +35,7 @@ function App() {
             }
           />
 
-          {/* ホーム（学期が無ければ /no-term へ飛ばす） */}
+          {/* ホーム（学期が無ければ /no-term へ） */}
           <Route
             path="/home"
             element={
@@ -47,7 +47,7 @@ function App() {
             }
           />
 
-          {/* 授業追加 */}
+          {/* 授業追加（termId はクエリで受け取る） */}
           <Route
             path="/add"
             element={
@@ -69,9 +69,9 @@ function App() {
             }
           />
 
-          {/* 授業詳細 */}
+          {/* 授業詳細： termId と courseId を受け取る */}
           <Route
-            path="/detail/:courseId"
+            path="/detail/:termId/:courseId"
             element={
               <ProtectedRoute>
                 <TermGate>
@@ -81,9 +81,9 @@ function App() {
             }
           />
 
-          {/* 授業編集 */}
+          {/* 授業編集： termId と courseId を受け取る */}
           <Route
-            path="/edit-course/:courseId"
+            path="/edit-course/:termId/:courseId"
             element={
               <ProtectedRoute>
                 <TermGate>

@@ -22,7 +22,7 @@ function calcProgress(tasks = []) {
 
 export default function CourseDetail() {
   const { user } = useAuth();
-  const { courseId } = useParams();
+  const { termId, courseId } = useParams(); // ← termId を受け取るように変更
   const navigate = useNavigate();
 
   const [course, setCourse] = useState(null);
@@ -32,9 +32,14 @@ export default function CourseDetail() {
 
   useEffect(() => {
     if (!user?.uid) return;
+    if (!termId || !courseId) {
+      setLoading(false);
+      setCourse(null);
+      return;
+    }
 
     let mounted = true;
-    getCourse(user.uid, courseId)
+    getCourse(user.uid, termId, courseId)
       .then((c) => {
         if (mounted) {
           setCourse(c);
@@ -45,11 +50,13 @@ export default function CourseDetail() {
           setEditingScores(map);
         }
       })
-      .catch(console.error)
+      .catch((e) => {
+        console.error(e);
+      })
       .finally(() => mounted && setLoading(false));
 
     return () => (mounted = false);
-  }, [user?.uid, courseId]);
+  }, [user?.uid, termId, courseId]);
 
   const progress = useMemo(() => calcProgress(course?.tasks || []), [course]);
 
@@ -66,7 +73,8 @@ export default function CourseDetail() {
     }));
 
     try {
-      await updateCourse(user.uid, courseId, { tasks: updatedTasks });
+      // updateCourse takes (uid, termId, courseId, newData)
+      await updateCourse(user.uid, termId, course.courseId, { tasks: updatedTasks });
       setCourse((c) => ({ ...c, tasks: updatedTasks }));
       alert("保存しました");
     } catch (e) {
@@ -79,7 +87,8 @@ export default function CourseDetail() {
     const ok = window.confirm("本当に授業を削除しますか？");
     if (!ok) return;
     try {
-      await deleteCourse(user.uid, courseId);
+      // deleteCourse takes (uid, termId, courseId)
+      await deleteCourse(user.uid, termId, course.courseId);
       navigate("/home");
     } catch (e) {
       console.error(e);
@@ -102,7 +111,8 @@ export default function CourseDetail() {
 
           {showMenu && (
             <div className="menu-popup">
-              <div onClick={() => navigate(`/edit-course/${course.courseId}`)}>授業を編集</div>
+              {/* edit route now includes termId */}
+              <div onClick={() => navigate(`/edit-course/${termId}/${course.courseId}`)}>授業を編集</div>
               <div className="delete-btn" onClick={handleDelete}>授業を削除</div>
             </div>
           )}
@@ -129,7 +139,7 @@ export default function CourseDetail() {
   </button>
       </div>
 
-      {/* 右 2/3 → ★ detail-left の外に正しく配置 */}
+      {/* 右 2/3 */}
       <div className="detail-right">
         <table className="score-table">
           <thead>

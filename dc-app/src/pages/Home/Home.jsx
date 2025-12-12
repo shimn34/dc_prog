@@ -2,7 +2,7 @@
 import "./Home.css";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getCourses, getTerms, createTerm } from "../../services/courseService";
+import { getCourses, getTerms } from "../../services/courseService";
 import { useAuth } from "../../hooks/useAuth";
 
 export default function Home() {
@@ -52,7 +52,7 @@ export default function Home() {
 
   /* ===========================
       2. 選択中学期の授業一覧読み込み
-     =========================== */
+     ========================== */
   useEffect(() => {
     if (!user?.uid || !currentTermId) return;
 
@@ -83,32 +83,12 @@ export default function Home() {
     const exist = findCourse(dayVal, periodVal);
 
     if (exist)
-      navigate(`/detail/${exist.courseId}`);
+      // ← 詳細ページに termId を含めて遷移するように変更
+      navigate(`/detail/${currentTermId}/${exist.courseId}`);
     else
       navigate(
         `/add?day=${dayVal}&period=${periodVal}&termId=${currentTermId}`
       );
-  };
-
-  /* =======================
-      5. 学期追加ボタン
-     ======================= */
-  const handleAddTerm = async () => {
-    if (!user?.uid) return;
-
-    const year = new Date().getFullYear();
-    const semester = "前期"; // デフォルト
-
-    const newId = await createTerm(user.uid, {
-      year,
-      semester,
-    });
-
-    const newTerm = { id: newId, year, semester };
-
-    const updated = [newTerm, ...terms];
-    setTerms(updated);
-    setCurrentTermId(newId);
   };
 
   /* =======================

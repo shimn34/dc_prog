@@ -1,3 +1,4 @@
+// src/services/courseService.js
 import {
   collection,
   doc,
@@ -20,7 +21,7 @@ import { db } from "./firebase";
 export async function createTerm(uid, { year, semester }) {
   const termsRef = collection(db, "users", uid, "terms");
 
-  // 📌 まず重複チェック
+  // 重複チェック
   const q = query(
     termsRef,
     where("year", "==", year),
@@ -29,11 +30,9 @@ export async function createTerm(uid, { year, semester }) {
 
   const snap = await getDocs(q);
   if (!snap.empty) {
-    // 同一の年度＋学期が存在する場合
     throw new Error("同じ年度・学期の学期がすでに存在しています");
   }
 
-  // 📌 重複なし → 新規作成
   const ref = doc(termsRef);
   await setDoc(ref, {
     id: ref.id,
