@@ -6,6 +6,7 @@ import Login from "./pages/Login/Login";
 import Home from "./pages/Home/Home";
 import AddCourse from "./pages/AddCourse/AddCourse";
 import ProtectedRoute from "./routes/ProtectedRoute";
+import Layout from "./components/Layout";
 
 function App() {
   return (
@@ -13,30 +14,25 @@ function App() {
       <BrowserRouter>
         <Routes>
 
-          {/* デフォルトは /login に飛ばす */}
+          {/* ===== デフォルトは /login に飛ばす ===== */}
           <Route path="/" element={<Navigate to="/login" replace />} />
 
-          {/* ログインページ */}
+          {/* ===== ログインページ ===== */}
           <Route path="/login" element={<Login />} />
 
-          {/* ログイン必須ページ（ProtectedRouteで保護） */}
+          {/* ===== ログイン必須ページを Layout で包む ===== */}
           <Route
-            path="/home"
+            path="/"
             element={
               <ProtectedRoute>
-                <Home />
+                <Layout />
               </ProtectedRoute>
             }
-          />
-
-          <Route
-            path="/add"
-            element={
-              <ProtectedRoute>
-                <AddCourse />
-              </ProtectedRoute>
-            }
-          />
+          >
+            {/* Layout 内のページ */}
+            <Route path="home" element={<Home />} />
+            <Route path="add" element={<AddCourse />} />
+          </Route>
 
         </Routes>
       </BrowserRouter>
