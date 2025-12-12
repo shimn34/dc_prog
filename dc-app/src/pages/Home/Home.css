@@ -129,3 +129,21 @@
 .row {
   display: contents;
 }
+
+/* 学期1つの見た目 */
+.term-item {
+  padding: 10px;
+  border-radius: 6px;
+  margin: 4px 0;
+  cursor: pointer;
+  background-color: white;  /* ← 未選択は白 */
+  color: black;             /* ← 文字は黒 */
+  transition: background 0.2s;
+}
+
+/* 選択中の学期 */
+.term-item.active {
+  background-color: #aafff3; /* ← 選択中は aafff3 */
+  color: black;              /* ← 黒文字を維持 */
+  font-weight: bold;
+}

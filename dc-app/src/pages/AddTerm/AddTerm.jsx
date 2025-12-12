@@ -1,8 +1,8 @@
 // src/pages/AddTerm/AddTerm.jsx
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
-import { createTerm } from "../../services/courseService";
+import { createTerm, getTerms } from "../../services/courseService";
 
 export default function AddTerm() {
   const { user } = useAuth();
@@ -13,10 +13,33 @@ export default function AddTerm() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
+  const [existing, setExisting] = useState([]);
+
+  // すでにある term を取得しておき、重複チェックに使う
+  useEffect(() => {
+    if (!user?.uid) return;
+    (async () => {
+      const list = await getTerms(user.uid);
+      setExisting(list);
+    })();
+  }, [user]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
+
     if (!user?.uid) {
       setError("ログインされていません");
+      return;
+    }
+
+    // 🔥 ここで重複チェック
+    const exists = existing.some(
+      (t) => t.year === year && t.semester === semester
+    );
+
+    if (exists) {
+      setError(`すでに ${year}年 ${semester} が存在しています`);
       return;
     }
 
