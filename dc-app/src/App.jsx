@@ -14,13 +14,13 @@ function App() {
       <BrowserRouter>
         <Routes>
 
-          {/* ===== デフォルトは /login に飛ばす ===== */}
+          {/* デフォルトは /login */}
           <Route path="/" element={<Navigate to="/login" replace />} />
 
-          {/* ===== ログインページ ===== */}
+          {/* ログインページ */}
           <Route path="/login" element={<Login />} />
 
-          {/* ===== ログイン必須ページを Layout で包む ===== */}
+          {/* ログイン必須ページ：共通レイアウト */}
           <Route
             path="/"
             element={
@@ -29,7 +29,6 @@ function App() {
               </ProtectedRoute>
             }
           >
-            {/* Layout 内のページ */}
             <Route path="home" element={<Home />} />
             <Route path="add" element={<AddCourse />} />
           </Route>
