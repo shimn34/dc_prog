@@ -1,42 +1,47 @@
 // src/App.jsx
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "./hooks/useAuth";
+
 import Login from "./pages/Login/Login";
 import Home from "./pages/Home/Home";
+import AddCourse from "./pages/AddCourse/AddCourse";
+import ProtectedRoute from "./routes/ProtectedRoute";
 
 function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
         <Routes>
+
           {/* デフォルトは /login に飛ばす */}
           <Route path="/" element={<Navigate to="/login" replace />} />
 
+          {/* ログインページ */}
           <Route path="/login" element={<Login />} />
 
-          {/* /home はログインしてないと見れない */}
+          {/* ログイン必須ページ（ProtectedRouteで保護） */}
           <Route
             path="/home"
             element={
-              <ProtectedRouteWrapper>
+              <ProtectedRoute>
                 <Home />
-              </ProtectedRouteWrapper>
+              </ProtectedRoute>
             }
           />
+
+          <Route
+            path="/add"
+            element={
+              <ProtectedRoute>
+                <AddCourse />
+              </ProtectedRoute>
+            }
+          />
+
         </Routes>
       </BrowserRouter>
     </AuthProvider>
   );
-}
-
-/**
- * ProtectedRoute を別コンポーネントとして包んで使う
- * （同ファイル内に定義してもOK）
- */
-import ProtectedRoute from "./routes/ProtectedRoute";
-
-function ProtectedRouteWrapper({ children }) {
-  return <ProtectedRoute>{children}</ProtectedRoute>;
 }
 
 export default App;
