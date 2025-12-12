@@ -5,8 +5,9 @@ import { AuthProvider } from "./hooks/useAuth";
 import Login from "./pages/Login/Login";
 import Home from "./pages/Home/Home";
 import AddCourse from "./pages/AddCourse/AddCourse";
+import CourseDetail from "./pages/CourseDetail/CourseDetail";
+
 import ProtectedRoute from "./routes/ProtectedRoute";
-import Layout from "./components/Layout";
 
 function App() {
   return (
@@ -20,18 +21,35 @@ function App() {
           {/* ログインページ */}
           <Route path="/login" element={<Login />} />
 
-          {/* ログイン必須ページ：共通レイアウト */}
+          {/* ログイン必須ページ（レイアウトなし） */}
           <Route
-            path="/"
+            path="/home"
             element={
               <ProtectedRoute>
-                <Layout />
+                <Home />
               </ProtectedRoute>
             }
-          >
-            <Route path="home" element={<Home />} />
-            <Route path="add" element={<AddCourse />} />
-          </Route>
+          />
+
+          {/* 授業追加（曜日・時限はクエリで受け取る） */}
+          <Route
+            path="/add"
+            element={
+              <ProtectedRoute>
+                <AddCourse />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* 授業詳細画面（courseId を必須とする） */}
+          <Route
+            path="/detail"
+            element={
+              <ProtectedRoute>
+                <CourseDetail />
+              </ProtectedRoute>
+            }
+          />
 
         </Routes>
       </BrowserRouter>

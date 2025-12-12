@@ -73,3 +73,27 @@
 .row {
   display: contents;
 }
+
+.course-cell.occupied .course-card {
+  width: 100%;
+  padding: 6px;
+  text-align: left;
+}
+
+.course-name {
+  font-weight: 600;
+  font-size: 1.1em;
+  color: #0b3b79;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.course-meta {
+  font-size: 0.85em;
+  color: #333;
+}
+.course-empty {
+  color: #888;
+  font-size: 1.6em;
+}

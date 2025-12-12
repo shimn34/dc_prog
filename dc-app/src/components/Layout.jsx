@@ -4,11 +4,10 @@ import "./Layout.css";
 
 export default function Layout() {
   const location = useLocation();
-  const isHome = location.pathname === "/home";
+  const isHome = location.pathname.startsWith("/home");
 
   return (
     <div className="app-container">
-
       <header className="app-header">
         <h1 className="app-title">CampusLife</h1>
       </header>
@@ -19,10 +18,9 @@ export default function Layout() {
 
       <nav className="app-nav">
         <Link to="/home" className="nav-item">Home</Link>
-        <Link to="/add" className="nav-item">追加</Link>
+        {/* 追加ボタンは削除 */}
         <Link to="/profile" className="nav-item">プロフィール</Link>
       </nav>
-
     </div>
   );
 }
