@@ -7,9 +7,11 @@ import Home from "./pages/Home/Home";
 import AddCourse from "./pages/AddCourse/AddCourse";
 import CourseDetail from "./pages/CourseDetail/CourseDetail";
 import EditCourse from "./pages/EditCourse/EditCourse";
-import AddTerm from "./pages/AddTerm/AddTerm";   // ←★ 追加
+import AddTerm from "./pages/AddTerm/AddTerm";
 
 import ProtectedRoute from "./routes/ProtectedRoute";
+import TermGate from "./routes/TermGate";      // ←★ 学期有無チェック
+import NoTerm from "./pages/NoTerm/NoTerm";   // ←★ 学期ゼロのときの画面
 
 function App() {
   return (
@@ -23,27 +25,41 @@ function App() {
           {/* ログインページ */}
           <Route path="/login" element={<Login />} />
 
-          {/* ホーム */}
+          {/* 学期ゼロのときに表示する画面 */}
+          <Route
+            path="/no-term"
+            element={
+              <ProtectedRoute>
+                <NoTerm />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* ホーム（学期が無ければ /no-term へ飛ばす） */}
           <Route
             path="/home"
             element={
               <ProtectedRoute>
-                <Home />
+                <TermGate>
+                  <Home />
+                </TermGate>
               </ProtectedRoute>
             }
           />
 
-          {/* 授業追加（曜日・時限・termId はクエリで受け取る） */}
+          {/* 授業追加 */}
           <Route
             path="/add"
             element={
               <ProtectedRoute>
-                <AddCourse />
+                <TermGate>
+                  <AddCourse />
+                </TermGate>
               </ProtectedRoute>
             }
           />
 
-          {/* 新しい学期を追加する画面 */}
+          {/* 学期追加 */}
           <Route
             path="/add-term"
             element={
@@ -53,12 +69,14 @@ function App() {
             }
           />
 
-          {/* 授業詳細（courseId を URL パラメータで受け取る） */}
+          {/* 授業詳細 */}
           <Route
             path="/detail/:courseId"
             element={
               <ProtectedRoute>
-                <CourseDetail />
+                <TermGate>
+                  <CourseDetail />
+                </TermGate>
               </ProtectedRoute>
             }
           />
@@ -68,7 +86,9 @@ function App() {
             path="/edit-course/:courseId"
             element={
               <ProtectedRoute>
-                <EditCourse />
+                <TermGate>
+                  <EditCourse />
+                </TermGate>
               </ProtectedRoute>
             }
           />
