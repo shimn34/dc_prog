@@ -1,0 +1,39 @@
+.timetable-container {
+  max-width: 900px;
+  margin: 30px auto;
+  padding: 0 10px;
+}
+
+.timetable {
+  display: grid;
+  /* 左に「コマ数」＋ 6曜日 */
+  grid-template-columns: 110px repeat(6, 100px);
+  /* 上にヘッダー1行 ＋ 6限 */
+  grid-auto-rows: 80px;
+  gap: 4px;
+}
+
+.cell {
+  border: 1px solid #ddd;
+  background: #fff;
+  padding: 8px;
+  box-sizing: border-box;
+  font-size: 14px;
+  border-radius: 6px;
+}
+
+.header {
+  background: #f5f5f5;
+  font-weight: bold;
+  text-align: center;
+}
+
+.day-header {
+  font-size: 50px;
+  background: #ececec;
+}
+
+.period-header {
+  font-size: 13px;
+  line-height: 1.2;
+}
