@@ -9,8 +9,10 @@ export default function AddCourse() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+
   const day = Number(searchParams.get("day"));
   const period = Number(searchParams.get("period"));
+  const termId = searchParams.get("termId"); // ★追加
 
   const dayNames = ["月", "火", "水", "木", "金", "土"];
   const dayLabel = dayNames[day - 1];
@@ -25,7 +27,7 @@ export default function AddCourse() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
-  // ensure there's always one empty task row at end
+  // 最後の行が空なら増やさない、入力されたら次の行を追加
   useEffect(() => {
     const last = tasks[tasks.length - 1];
     if (!last || last.name || last.maxScore || last.weight) {
@@ -39,16 +41,22 @@ export default function AddCourse() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+
     if (!user?.uid) {
       setError("ログインされていません");
       return;
     }
+
+    if (!termId) {
+      setError("学期IDが指定されていません");
+      return;
+    }
+
     if (!courseName.trim()) {
       setError("授業名は必須です");
       return;
     }
 
-    // build tasks to save: filter out rows with no name
     const tasksToSave = tasks
       .filter((t) => t.name && t.name.trim())
       .map((t) => ({
@@ -61,15 +69,16 @@ export default function AddCourse() {
 
     try {
       setSaving(true);
-      await addCourse(user.uid, {
+
+      await addCourse(user.uid, termId, {
         courseName: courseName.trim(),
         teacher: teacher.trim() || null,
         room: room.trim() || null,
-        day: day,
-        period: period,
+        day,
+        period,
         tasks: tasksToSave,
       });
-      // 保存後は Home に戻す
+
       navigate("/home");
     } catch (err) {
       console.error(err);
@@ -82,7 +91,9 @@ export default function AddCourse() {
   return (
     <div style={{ maxWidth: 720, margin: "12px auto", padding: 12 }}>
       <h2>授業を追加</h2>
-      <p>登録先： <b>{dayLabel}曜日 {period}限</b></p>
+      <p>
+        登録先： <b>{dayLabel}曜日 {period}限</b>
+      </p>
 
       <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 12 }}>
         <label>
@@ -102,15 +113,24 @@ export default function AddCourse() {
 
         <div>
           <h3>成績評価基準</h3>
+
           <div style={{ display: "grid", gridTemplateColumns: "1fr 120px 100px", gap: 8 }}>
             <div><strong>項目名</strong></div>
             <div><strong>満点</strong></div>
             <div><strong>重み(%)</strong></div>
           </div>
 
-          {tasks.map((t, idx) =>
+          {tasks.map((t) =>
             t ? (
-              <div key={t.id} style={{ display: "grid", gridTemplateColumns: "1fr 120px 100px", gap: 8, marginTop: 6 }}>
+              <div
+                key={t.id}
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "1fr 120px 100px",
+                  gap: 8,
+                  marginTop: 6,
+                }}
+              >
                 <input
                   placeholder="例：中間テスト"
                   value={t.name}
@@ -134,16 +154,21 @@ export default function AddCourse() {
               </div>
             ) : null
           )}
+
           <div style={{ fontSize: 12, color: "#666", marginTop: 6 }}>
-            ※ 下の空欄に入力すると次の行が増えます。重みの合計は任意（合計で正規化して計算します）。
+            ※ 空欄に入力すると自動で行が増えます。
           </div>
         </div>
 
         {error && <div style={{ color: "red" }}>{error}</div>}
 
         <div style={{ display: "flex", gap: 8, justifyContent: "flex-end", marginTop: 8 }}>
-          <button type="button" onClick={() => navigate("/home")} disabled={saving}>キャンセル</button>
-          <button type="submit" disabled={saving}>{saving ? "保存中..." : "保存"}</button>
+          <button type="button" onClick={() => navigate("/home")} disabled={saving}>
+            キャンセル
+          </button>
+          <button type="submit" disabled={saving}>
+            {saving ? "保存中..." : "保存"}
+          </button>
         </div>
       </form>
     </div>

@@ -7,6 +7,7 @@ import Home from "./pages/Home/Home";
 import AddCourse from "./pages/AddCourse/AddCourse";
 import CourseDetail from "./pages/CourseDetail/CourseDetail";
 import EditCourse from "./pages/EditCourse/EditCourse";
+import AddTerm from "./pages/AddTerm/AddTerm";   // ←★ 追加
 
 import ProtectedRoute from "./routes/ProtectedRoute";
 
@@ -22,7 +23,7 @@ function App() {
           {/* ログインページ */}
           <Route path="/login" element={<Login />} />
 
-          {/* ホーム（レイアウトなし） */}
+          {/* ホーム */}
           <Route
             path="/home"
             element={
@@ -32,12 +33,22 @@ function App() {
             }
           />
 
-          {/* 授業追加（曜日・時限はクエリで受け取る） */}
+          {/* 授業追加（曜日・時限・termId はクエリで受け取る） */}
           <Route
             path="/add"
             element={
               <ProtectedRoute>
                 <AddCourse />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* 新しい学期を追加する画面 */}
+          <Route
+            path="/add-term"
+            element={
+              <ProtectedRoute>
+                <AddTerm />
               </ProtectedRoute>
             }
           />
@@ -52,7 +63,7 @@ function App() {
             }
           />
 
-          {/* 授業編集画面（AddCourse の UI + 初期値入り） */}
+          {/* 授業編集 */}
           <Route
             path="/edit-course/:courseId"
             element={

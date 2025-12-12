@@ -1,5 +1,4 @@
 // src/services/courseService.js
-
 import {
   collection,
   doc,
@@ -13,15 +12,37 @@ import {
 import { db } from "./firebase";
 
 /* ============================
-   授業データ（courses）の CRUD
-   ============================ */
+   Term（学期）関連 CRUD
+   users/{uid}/terms/{termId}
+============================ */
 
-/**
- * 授業を追加
- * users/{uid}/courses/{自動ID}
- */
-export async function addCourse(uid, courseData) {
-  const ref = doc(collection(db, "users", uid, "courses"));
+/** 学期作成 */
+export async function createTerm(uid, { year, semester }) {
+  const ref = doc(collection(db, "users", uid, "terms"));
+  await setDoc(ref, {
+    id: ref.id,
+    year,
+    semester,
+    createdAt: new Date(),
+  });
+  return ref.id;
+}
+
+/** 学期一覧取得 */
+export async function getTerms(uid) {
+  const q = query(collection(db, "users", uid, "terms"));
+  const snap = await getDocs(q);
+  return snap.docs.map((d) => d.data());
+}
+
+/* ============================
+   Course（授業）CRUD
+   users/{uid}/terms/{termId}/courses/{courseId}
+============================ */
+
+/** 授業追加 */
+export async function addCourse(uid, termId, courseData) {
+  const ref = doc(collection(db, "users", uid, "terms", termId, "courses"));
   await setDoc(ref, {
     ...courseData,
     courseId: ref.id,
@@ -30,50 +51,36 @@ export async function addCourse(uid, courseData) {
   return ref.id;
 }
 
-/**
- * 授業一覧を取得
- * users/{uid}/courses
- */
-export async function getCourses(uid) {
-  const q = query(collection(db, "users", uid, "courses"));
-  const snapshot = await getDocs(q);
-  return snapshot.docs.map((d) => d.data());
+/** 授業一覧（学期ごと） */
+export async function getCourses(uid, termId) {
+  const q = query(collection(db, "users", uid, "terms", termId, "courses"));
+  const snap = await getDocs(q);
+  return snap.docs.map((d) => d.data());
 }
 
-/**
- * 授業1件を取得
- * users/{uid}/courses/{courseId}
- */
-export async function getCourse(uid, courseId) {
-  const ref = doc(db, "users", uid, "courses", courseId);
+/** 授業1件取得 */
+export async function getCourse(uid, termId, courseId) {
+  const ref = doc(db, "users", uid, "terms", termId, "courses", courseId);
   const snap = await getDoc(ref);
   return snap.exists() ? snap.data() : null;
 }
 
-/**
- * 授業を更新
- */
-export async function updateCourse(uid, courseId, newData) {
-  const ref = doc(db, "users", uid, "courses", courseId);
+/** 授業更新 */
+export async function updateCourse(uid, termId, courseId, newData) {
+  const ref = doc(db, "users", uid, "terms", termId, "courses", courseId);
   await updateDoc(ref, newData);
 }
 
-/**
- * 授業を削除
- */
-export async function deleteCourse(uid, courseId) {
-  const ref = doc(db, "users", uid, "courses", courseId);
+/** 授業削除 */
+export async function deleteCourse(uid, termId, courseId) {
+  const ref = doc(db, "users", uid, "terms", termId, "courses", courseId);
   await deleteDoc(ref);
 }
 
 /* ============================
    成績計算ロジック
-   ============================ */
+============================ */
 
-/**
- * 進捗計算（％）
- * tasks = [{ title, weight, score, maxScore }]
- */
 export function calcProgress(course) {
   if (!course.tasks || course.tasks.length === 0) return 0;
 
@@ -84,7 +91,6 @@ export function calcProgress(course) {
     const { weight, score, maxScore } = task;
 
     if (!weight || !maxScore) continue;
-
     totalWeight += weight;
 
     if (score != null) {
@@ -97,9 +103,6 @@ export function calcProgress(course) {
   return Math.round((earned / totalWeight) * 100);
 }
 
-/**
- * ランク計算（S / A / B / C / -）
- */
 export function calcGradeRank(progress) {
   if (progress >= 90) return "S";
   if (progress >= 80) return "A";
