@@ -1,12 +1,47 @@
-/* Home全体（時間割を中央配置） */
-.timetable-wrapper {
+/* 左（学期） + 右（時間割）を横並びにする */
+.home-container {
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+  padding: 2vw;
+  box-sizing: border-box;
+}
+
+.term-panel {
+  width: 260px;
+  flex: 0 0 260px;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+.term-header {
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.term-list {
+  max-height: calc(100vh - 220px);
+  overflow: auto;
+}
+
+.term-add-btn {
   width: 100%;
-  height: 100%;
+  margin-top: 12px;
+}
+
+.timetable-wrapper {
+  flex: 1;
+  min-width: 0;
+
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
 
-  padding: 2vw;
+  /* padding は home-container に移したので消す */
+  padding: 0;
   box-sizing: border-box;
 }
 

@@ -55,14 +55,31 @@ export default function AddTerm() {
     }
   };
 
+  const fieldStyle = {
+    width: "100%",
+    padding: "12px 14px",
+    fontSize: 16,
+    borderRadius: 10,
+    border: "1px solid #ccc",
+    boxSizing: "border-box",
+  };
+
+  const labelStyle = {
+    display: "flex",
+    flexDirection: "column",
+    gap: 8,
+    fontWeight: 600,
+  };
+
   return (
-    <div style={{ maxWidth: 400, margin: "20px auto" }}>
+    <div style={{ maxWidth: 900, margin: "40px auto" , padding: 24}}>
       <h2>新しい学期を作成</h2>
 
       <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-        <label>
+        <label style={labelStyle}>
           年度
           <input
+            style={fieldStyle}
             type="number"
             value={year}
             onChange={(e) => setYear(Number(e.target.value))}
@@ -72,9 +89,13 @@ export default function AddTerm() {
           />
         </label>
 
-        <label>
+        <label style={labelStyle}>
           学期
-          <select value={semester} onChange={(e) => setSemester(e.target.value)}>
+          <select
+            style={fieldStyle}
+            value={semester}
+            onChange={(e) => setSemester(e.target.value)}
+          >
             <option value="前期">前期</option>
             <option value="後期">後期</option>
           </select>
