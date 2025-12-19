@@ -8,7 +8,8 @@ import "./EditCourse.css";
 
 export default function EditCourse() {
   const { user } = useAuth();
-  const { courseId } = useParams();
+  //const { courseId } = useParams();
+  const { termId, courseId } = useParams();
   const navigate = useNavigate();
 
   const [loading, setLoading] = useState(true);
@@ -24,20 +25,20 @@ export default function EditCourse() {
 
   // Firestore から現在の授業情報を取得
   useEffect(() => {
-    if (!user?.uid) return;
+    if (!user?.uid || !termId || !courseId) return;
 
     let mounted = true;
-    getCourse(user.uid, courseId)
+
+    getCourse(user.uid, termId, courseId)
       .then((c) => {
         if (!mounted || !c) return;
 
         setCourseName(c.courseName);
         setTeacher(c.teacher || "");
         setRoom(c.room || "");
-        setDay(c.day);       // Firestore は 0 始まり
-        setPeriod(c.period); // 1 始まり
+        setDay(c.day);
+        setPeriod(c.period);
 
-        // tasks に初期値をセット
         const loaded = (c.tasks || []).map((t) => ({
           id: t.id,
           name: t.name,
@@ -45,22 +46,14 @@ export default function EditCourse() {
           weight: t.weight,
         }));
 
-        // 最後に空行を追加
-        loaded.push({
-          id: uuidv4(),
-          name: "",
-          maxScore: "",
-          weight: "",
-        });
-
+        loaded.push({ id: uuidv4(), name: "", maxScore: "", weight: "" });
         setTasks(loaded);
       })
       .catch((e) => console.error(e))
       .finally(() => mounted && setLoading(false));
 
     return () => (mounted = false);
-  }, [user?.uid, courseId]);
-
+  }, [user?.uid, termId, courseId]);
 
   // 行の追加を自動で行う
   useEffect(() => {
@@ -107,7 +100,7 @@ export default function EditCourse() {
 
     try {
       setSaving(true);
-      await updateCourse(user.uid, courseId, {
+      await updateCourse(user.uid, termId, courseId, {
         courseName: courseName.trim(),
         teacher: teacher.trim() || null,
         room: room.trim() || null,
