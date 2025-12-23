@@ -215,3 +215,46 @@
   color: black;              /* ← 黒文字を維持 */
   font-weight: bold;
 }
+
+/* スマホ対応 */
+@media (max-width: 768px) {
+  .home-container {
+    flex-direction: column;   /* 左右→上下 */
+    gap: 12px;
+    padding: 12px;
+  }
+
+  .term-panel {
+    width: 100%;
+    flex: none;
+    padding: 12px;
+  }
+
+  /* 学期一覧を横スクロールのタブっぽく */
+  .term-list {
+    max-height: none;
+    overflow-y: visible;
+
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 6px;
+  }
+
+  .term-item {
+    width: auto;
+    min-width: 140px;         /* タブの最低幅 */
+    margin: 0;
+    flex: 0 0 auto;
+  }
+
+  .timetable-wrapper {
+    justify-content: center;
+  }
+
+  /* 時間割は画面幅にフィットさせる */
+  .timetable {
+    width: min(96vw, 520px);
+    height: min(96vw, 520px);
+  }
+}
