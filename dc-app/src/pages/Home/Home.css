@@ -5,6 +5,8 @@
   gap: 24px;
   padding: 2vw;
   box-sizing: border-box;
+
+  overflow-x: hidden; /* 追加 */
 }
 
 .term-panel {
@@ -24,7 +26,8 @@
 
 .term-list {
   max-height: calc(100vh - 220px);
-  overflow: auto;
+  overflow-y: auto;
+  overflow-x: hidden; /* ←追加 */
 }
 
 .term-add-btn {
@@ -50,15 +53,15 @@
   display: grid;
   grid-template-columns: 70px repeat(6, 1fr);
 
-  width: min(90vw, 90vh);
-  height: min(90vw, 90vh);
+  /* 右側の残り幅に合わせて縮むようにする */
+  width: min(calc(100vw - 260px - 24px - 4vw), 90vh);
+  height: min(calc(100vw - 260px - 24px - 4vw), 90vh);
+
   aspect-ratio: 1 / 1;
 
   background: #fff;
   border: 1px solid #ddd;
   overflow: hidden;
-
-  /* 各行の高さを均等にする（ただし内容が押し広げないよう min-height:0 が必要）*/
   grid-auto-rows: 1fr;
 }
 
@@ -167,13 +170,42 @@
 
 /* 学期1つの見た目 */
 .term-item {
+  width: 100%;
+  box-sizing: border-box;      /* ← これが超重要 */
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* ← 右端に配置が安定 */
+  gap: 10px;
+
   padding: 10px;
   border-radius: 6px;
   margin: 4px 0;
   cursor: pointer;
-  background-color: white;  /* ← 未選択は白 */
-  color: black;             /* ← 文字は黒 */
+  background-color: white;
+  color: black;
   transition: background 0.2s;
+}
+
+.term-label {
+  flex: 1;
+  min-width: 0;              /* 省略表示に必須 */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.term-delete-btn {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 6px;
+  border-radius: 8px;
+  flex: 0 0 auto; /* 念のため */
+}
+
+.term-delete-btn:hover {
+  background: #f2f2f2;
 }
 
 /* 選択中の学期 */

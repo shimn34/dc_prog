@@ -2,7 +2,7 @@
 import "./Home.css";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getCourses, getTerms } from "../../services/courseService";
+import { getCourses, getTerms, deleteTerm} from "../../services/courseService";
 import { useAuth } from "../../hooks/useAuth";
 
 export default function Home() {
@@ -109,14 +109,49 @@ export default function Home() {
               className={`term-item ${t.id === currentTermId ? "active" : ""}`}
               onClick={() => setCurrentTermId(t.id)}
             >
-              {t.year}年度 {t.semester}
+              <span className="term-label">
+                {t.year}年度 {t.semester}
+              </span>
+
+              <button
+                type="button"
+                className="term-delete-btn"
+                onClick={async (e) => {
+                  e.stopPropagation(); // ← これ重要（押したら選択が切り替わらないように）
+                  if (!user?.uid) return;
+
+                  const ok = window.confirm(`${t.year}年 ${t.semester} を削除しますか？\n（この学期の授業も消えます）`);
+                  if (!ok) return;
+
+                  await deleteTerm(user.uid, t.id);
+
+                  // 削除後に学期を取り直す
+                  const list = await getTerms(user.uid);
+                  const sorted = [...(list || [])].sort((a, b) => {
+                    if (a.year !== b.year) return b.year - a.year;
+                    return a.semester === "後期" ? -1 : 1;
+                  });
+
+                  setTerms(sorted);
+
+                  if (sorted.length === 0) {
+                    navigate("/no-term");
+                  } else {
+                    setCurrentTermId(sorted[0].id);
+                  }
+                }}
+                title="学期を削除"
+              >
+              🗑
+              </button>
             </div>
           ))}
         </div>
 
         <button
-        className="term-add-btn"
-        onClick={() => navigate("/add-term")}>
+          className="term-add-btn"
+          onClick={() => navigate("/add-term")}
+        >
           ＋ 新しい学期を追加
         </button>
       </div>

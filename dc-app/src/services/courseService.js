@@ -125,3 +125,16 @@ export function calcGradeRank(progress) {
   if (progress >= 60) return "C";
   return "-";
 }
+
+// 学期削除（term配下のcoursesも削除してからtermを削除）
+export async function deleteTerm(uid, termId) {
+  // まず courses を全削除（サブコレクションは自動で消えないため）
+  const coursesCol = collection(db, "users", uid, "terms", termId, "courses");
+  const snap = await getDocs(coursesCol);
+
+  await Promise.all(snap.docs.map((d) => deleteDoc(d.ref)));
+
+  // 最後に term 本体を削除
+  const termRef = doc(db, "users", uid, "terms", termId);
+  await deleteDoc(termRef);
+}
