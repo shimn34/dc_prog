@@ -195,13 +195,14 @@
 }
 
 .term-delete-btn {
-  border: none;
+  color: #000;          /* 黒 */
   background: transparent;
+  border: none;
   cursor: pointer;
-  font-size: 16px;
-  padding: 6px;
+  font-size: 18px;      /* 大きさは好みで */
+  line-height: 1;
+  padding: 6px 8px;
   border-radius: 8px;
-  flex: 0 0 auto; /* 念のため */
 }
 
 .term-delete-btn:hover {

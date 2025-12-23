@@ -142,7 +142,7 @@ export default function Home() {
                 }}
                 title="学期を削除"
               >
-              🗑
+              ×
               </button>
             </div>
           ))}
