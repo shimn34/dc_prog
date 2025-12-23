@@ -138,3 +138,5 @@ export async function deleteTerm(uid, termId) {
   const termRef = doc(db, "users", uid, "terms", termId);
   await deleteDoc(termRef);
 }
+
+//仮
